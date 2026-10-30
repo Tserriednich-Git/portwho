@@ -1,0 +1,28 @@
+{
+  "name": "portwho",
+  "version": "1.0.0",
+  "description": "Which process holds this port? A read-only Windows CLI.",
+  "type": "module",
+  "keywords": ["port", "netstat", "tasklist", "windows", "cli", "devtools"],
+  "license": "MIT",
+  "bin": {
+    "portwho": "src/index.ts"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=23.6"
+  },
+  "scripts": {
+    "start": "node src/index.ts",
+    "test": "node --test test/parse.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "typescript": "~6.0.3"
+  }
+}
