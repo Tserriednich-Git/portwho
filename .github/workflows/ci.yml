@@ -16,3 +16,13 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm pack --dry-run
+      - name: Install the packed tarball and run the command
+        shell: bash
+        run: |
+          set -e
+          npm pack --silent
+          npm install --global "./$(ls *.tgz)"
+          portwho --version
+          set +e
+          portwho not-a-port >/dev/null 2>&1
+          [ "$?" = 2 ] && echo "exit codes verified"

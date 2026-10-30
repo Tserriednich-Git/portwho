@@ -16,21 +16,22 @@ A dev server refuses to start, says `Port 8084 is being used by another process`
 
 ## Run it
 
-Needs Node 23.6 or newer, which runs TypeScript directly, so there is nothing to build.
+Needs Node 18 or newer and Windows — it reads `netstat` and `tasklist`.
+
+```bash
+npm install -g portwho-cli
+portwho 8088
+portwho 8088 --json
+portwho --version
+```
+
+`npx portwho-cli 8088` runs it without installing. The npm package is named `portwho-cli` because an unrelated `portwho` already holds that name on the registry; the command it installs is still `portwho`.
+
+From a clone, `npm test` builds `dist/` first. To run the sources directly, Node 23.6+ strips the types for you:
 
 ```bash
 node src/index.ts 8088
-node src/index.ts 8088 --json
-node src/index.ts --version
 ```
-
-Installing the package puts a `portwho` command on your PATH:
-
-```bash
-npm install -g github:Tserriednich-Git/portwho
-```
-
-It is not on the npm registry, so `npx portwho` does not resolve; publishing there needs an npm account.
 
 Exit codes: `0` at least one port is in use, `3` every port is free, `2` bad usage. That makes it usable in a script that waits for a port to be released:
 
@@ -57,12 +58,14 @@ Transient kernel-owned rows report PID `0`, which has no process name; those are
 ## Checks
 
 ```bash
-npm test        # 19 assertions
 npm run typecheck
+npm run build      # src/*.ts -> dist/*.js
+npm test           # 19 assertions, against dist/index.js
 npm pack --dry-run
 ```
 
-Fourteen are pure parser assertions over captured `netstat` and `tasklist` output: the translated header, IPv6 brackets, UDP rows without a state column, PID-zero rows, CRLF endings, non-table output and commas inside quoted process names. The other five run the real CLI as a child process — including one that opens a socket and then requires `portwho` to report the PID that owns it, which only holds on Windows, so CI runs on `windows-latest`.
+Fourteen are pure parser assertions over captured `netstat` and `tasklist` output: the translated header, IPv6 brackets, UDP rows without a state column, PID-zero rows, CRLF endings, non-table output and commas inside quoted process names. The other five run the real CLI as a child process — including one that opens a socket and then requires `portwho` to report the PID that owns it, which only holds on Windows, so CI runs on `windows-latest`. Because the tests drive `dist/index.js`, they exercise the exact file the registry serves.
+
 
 ## License
 

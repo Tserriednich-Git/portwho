@@ -4,7 +4,7 @@ import net from 'node:net';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
-const CLI = fileURLToPath(new URL('../src/index.ts', import.meta.url));
+const CLI = fileURLToPath(new URL('../dist/index.js', import.meta.url));
 const windowsOnly = process.platform === 'win32' ? false : 'portwho resolves processes through netstat and tasklist';
 
 type Report = { port: number; processes: { pid: number; name: string }[] };

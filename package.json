@@ -1,5 +1,5 @@
 {
-  "name": "portwho",
+  "name": "portwho-cli",
   "version": "1.0.0",
   "description": "Which process holds this port? A read-only Windows CLI.",
   "type": "module",
@@ -15,21 +15,24 @@
     "url": "https://github.com/Tserriednich-Git/portwho/issues"
   },
   "bin": {
-    "portwho": "src/index.ts"
+    "portwho": "dist/index.js"
   },
   "files": [
-    "src",
+    "dist",
     "README.md",
     "LICENSE"
   ],
   "os": ["win32"],
   "engines": {
-    "node": ">=23.6"
+    "node": ">=18"
   },
   "scripts": {
-    "start": "node src/index.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/index.js",
+    "pretest": "npm run build",
     "test": "node --test test/parse.test.ts test/cli.test.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
