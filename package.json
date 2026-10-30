@@ -5,6 +5,15 @@
   "type": "module",
   "keywords": ["port", "netstat", "tasklist", "windows", "cli", "devtools"],
   "license": "MIT",
+  "author": "Gabriel",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tserriednich-Git/portwho.git"
+  },
+  "homepage": "https://github.com/Tserriednich-Git/portwho#readme",
+  "bugs": {
+    "url": "https://github.com/Tserriednich-Git/portwho/issues"
+  },
   "bin": {
     "portwho": "src/index.ts"
   },
@@ -13,12 +22,13 @@
     "README.md",
     "LICENSE"
   ],
+  "os": ["win32"],
   "engines": {
     "node": ">=23.6"
   },
   "scripts": {
     "start": "node src/index.ts",
-    "test": "node --test test/parse.test.ts",
+    "test": "node --test test/parse.test.ts test/cli.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 
 import {
   connectionsForPort,
@@ -58,14 +59,30 @@ function pad(text: string | number, width = 5): string {
   return String(text).padEnd(width);
 }
 
-function main(argv: string[]): number {
-  const flags = argv.filter((argument) => argument.startsWith('--'));
-  const ports = argv
-    .filter((argument) => !argument.startsWith('--'))
-    .map(Number)
-    .filter((value) => Number.isInteger(value) && value > 0 && value < 65536);
+function readVersion(): string {
+  const manifest = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as { version: string };
+  return manifest.version;
+}
 
-  if (ports.length === 0) {
+function main(argv: string[]): number {
+  const flags = new Set(argv.filter((argument) => argument.startsWith('--')));
+  const unknown = [...flags].filter((flag) => flag !== '--json' && flag !== '--help' && flag !== '--version');
+  const positional = argv.filter((argument) => !argument.startsWith('--'));
+  const ports = positional.map(Number).filter((value) => Number.isInteger(value) && value > 0 && value < 65536);
+
+  if (flags.has('--version')) {
+    console.log(`portwho ${readVersion()}`);
+    return 0;
+  }
+  if (flags.has('--help')) {
+    console.log(USAGE);
+    return 0;
+  }
+
+  const rejected = positional.length - ports.length;
+  if (unknown.length > 0 || rejected > 0 || ports.length === 0) {
+    for (const flag of unknown) console.error(`Unknown option: ${flag}`);
+    if (rejected > 0) console.error(`Expected a port number between 1 and 65535.`);
     console.error(USAGE);
     return 2;
   }
@@ -77,7 +94,7 @@ function main(argv: string[]): number {
   const connections = parseNetstat(commandOutput('netstat', ['-ano']));
   const reports = ports.map((port) => buildReport(port, connections));
 
-  if (flags.includes('--json')) {
+  if (flags.has('--json')) {
     console.log(JSON.stringify(reports, null, 2));
   } else {
     for (const report of reports) console.log(describe(report));
